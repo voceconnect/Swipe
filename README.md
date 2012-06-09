@@ -41,6 +41,8 @@ Swipe can take an optional second parameter– an object of key/value settings:
 
 -	**callback** Function - runs at the end of any slide change. *(effective for updating position indicators/counters)*
 
+-	**items** Integer *(default:1)* - number of slides to show at a time (and page by).
+
 ### Example
 
 ``` js
@@ -91,4 +93,4 @@ I would love to hear more about how to improve Swipe. Play with it and let me kn
 
 
 ## License
-Swipe mobile slider is &copy; 2011 [Brad Birdsall](http://bradbirdsall.com) and is licensed under the terms of GPL &amp; MIT licenses. 
+Swipe mobile slider is &copy; 2011 [Brad Birdsall](http://bradbirdsall.com) and is licensed under the terms of GPL &amp; MIT licenses.
