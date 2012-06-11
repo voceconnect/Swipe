@@ -20,6 +20,7 @@ window.Swipe = function(element, options) {
   this.callback = this.options.callback || function() {};
   this.delay = this.options.auto || 0;
   this.items = this.options.items || 1;
+  this.peek = (this.options.items > 1) ? this.options.peek || 0 : 0;
 
   // reference dom elements
   this.container = element;
@@ -28,6 +29,14 @@ window.Swipe = function(element, options) {
   // static css
   this.container.style.overflow = 'hidden';
   this.element.style.listStyle = 'none';
+
+  // add peek class if specified
+  if (this.peek > 0) {
+    if (this.container.className)
+      this.container.className += ' peek';
+    else
+      this.container.className = 'peek';
+  }
 
   // trigger slider initialization
   this.setup();
@@ -61,7 +70,7 @@ Swipe.prototype = {
     if (this.length < 2) return null;
 
     // determine width of each slide
-    this.width = this.container.getBoundingClientRect().width / this.items;
+    this.width = this.container.getBoundingClientRect().width / this.items - this.peek;
 
     // return immediately if measurement fails
     if (!this.width) return null;

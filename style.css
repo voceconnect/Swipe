@@ -45,3 +45,6 @@ a {
   font-size:20px;
   text-align:center;
 }
+.swipe.peek li div, .swipe.peek div div div {
+	margin-right:0;
+}
