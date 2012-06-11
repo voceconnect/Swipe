@@ -80,7 +80,7 @@ Swipe.prototype = {
     }
 
     // set start position and force translate to remove initial flickering
-    this.slide(this.index, 0); 
+    this.slide(this.index, 0);
 
     // show slider element
     this.container.style.visibility = 'visible';
@@ -104,7 +104,7 @@ Swipe.prototype = {
   },
 
   getPos: function() {
-    
+
     // return current index position
     return this.index;
 
@@ -117,7 +117,7 @@ Swipe.prototype = {
     clearTimeout(this.interval);
 
     // if not at first slide
-    if (this.index) this.slide(this.index-1, this.speed);
+    if (this.index) this.slide(this.index-(this.items), this.speed);
 
   },
 
@@ -127,7 +127,7 @@ Swipe.prototype = {
     this.delay = delay || 0;
     clearTimeout(this.interval);
 
-    if (this.index < this.length - this.items) this.slide(this.index+1, this.speed); // if not last slide
+    if (this.index < this.length - this.items) this.slide(this.index+(this.items), this.speed); // if not last slide
     else this.slide(0, this.speed); //if last slide return to start
 
   },
@@ -137,18 +137,18 @@ Swipe.prototype = {
     var _this = this;
 
     this.interval = (this.delay)
-      ? setTimeout(function() { 
+      ? setTimeout(function() {
         _this.next(_this.delay);
       }, this.delay)
       : 0;
-  
+
   },
-  
+
   stop: function() {
     this.delay = 0;
     clearTimeout(this.interval);
   },
-  
+
   resume: function() {
     this.delay = this.options.auto || 0;
     this.begin();
@@ -168,7 +168,7 @@ Swipe.prototype = {
   },
 
   transitionEnd: function(e) {
-    
+
     if (this.delay) this.begin();
 
     this.callback(e, this.index, this.slides[this.index]);
@@ -176,7 +176,7 @@ Swipe.prototype = {
   },
 
   onTouchStart: function(e) {
-    
+
     this.start = {
 
       // get touch coordinates for delta calculations in onTouchMove
@@ -190,7 +190,7 @@ Swipe.prototype = {
 
     // used for testing first onTouchMove event
     this.isScrolling = undefined;
-    
+
     // reset deltaX
     this.deltaX = 0;
 
@@ -211,51 +211,18 @@ Swipe.prototype = {
       this.isScrolling = !!( this.isScrolling || Math.abs(this.deltaX) < Math.abs(e.touches[0].pageY - this.start.pageY) );
     }
 
-    // if user is not trying to scroll vertically
-    if (!this.isScrolling) {
-
-      // prevent native scrolling 
-      e.preventDefault();
-
-      // cancel slideshow
-      clearTimeout(this.interval);
-
-      // increase resistance if first or last slide
-      this.deltaX = 
-        this.deltaX / 
-          ( (!this.index && this.deltaX > 0               // if first slide and sliding left
-            || this.index == this.length - this.items     // or if last slide and sliding right
-            && this.deltaX < 0                            // and if sliding at all
-          ) ?                      
-          ( Math.abs(this.deltaX) / this.width + 1 )      // determine resistance level
-          : 1 );                                          // no resistance if false
-      
-      // translate immediately 1-to-1
-      this.element.style.webkitTransform = 'translate3d(' + (this.deltaX - this.index * this.width) + 'px,0,0)';
-
-    }
-
   },
 
   onTouchEnd: function(e) {
 
-    // determine if slide attempt triggers next/prev slide
-    var isValidSlide = 
-          Number(new Date()) - this.start.time < 250      // if slide duration is less than 250ms
-          && Math.abs(this.deltaX) > 20                   // and if slide amt is greater than 20px
-          || Math.abs(this.deltaX) > this.width/2,        // or if slide amt is greater than half the width
-
-    // determine if slide attempt is past start and end
-        isPastBounds = 
-          !this.index && this.deltaX > 0                          // if first slide and slide amt is greater than 0
-          || this.index == this.length - this.items && this.deltaX < 0;    // or if last slide and slide amt is less than 0
-
     // if not scrolling vertically
     if (!this.isScrolling) {
-
-      // call slide function with slide end value based on isValidSlide and isPastBounds tests
-      this.slide( this.index + ( isValidSlide && !isPastBounds ? (this.deltaX < 0 ? 1 : -1) : 0 ), this.speed );
-
+        if (this.deltaX > 0) {
+            this.prev(0);
+        } else if (this.index < (this.length - this.items)) {
+            // avoid rewinding to first slide on swipe
+            this.next(0);
+        }
     }
 
   }
